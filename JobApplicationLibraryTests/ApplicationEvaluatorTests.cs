@@ -268,7 +268,7 @@ namespace JobApplicationLibrary.Tests
             var result = evaluator.Evaluate(form);
 
             // Assert
-            mock.Verify(i => i.IsValid(It.IsAny<string>()), Times.Exactly(0);
+            mock.Verify(i => i.IsValid(It.IsAny<string>()), Times.Exactly(0));
         }
     }
 }
