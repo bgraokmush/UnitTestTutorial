@@ -19,30 +19,33 @@ namespace JobApplicationLibrary.Tests
             mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("TURKEY");
             mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(true);
 
-            Console.WriteLine("Mock oluşturuldu");
             return mock;
+            
+            
         }
 
         private ApplicationEvaluator InitialiseTestEvaluator(Mock<IIdentityValidator> mock)
         {
-            var evaluator = new ApplicationEvaluator(mock.Object);
-            return evaluator;
+            using (ApplicationEvaluator evaluator = new ApplicationEvaluator(mock.Object))
+            {
+                return evaluator;
+            }
         }
 
         private JobApplication InitialiseTestJobApplictaion()
         {
-            JobApplication form = new JobApplication()
+
+            using (JobApplication form = new JobApplication())
             {
-                Applicant = new Applicant()
+                using(form.Applicant = new Applicant())
                 {
-                    Age = 18,
-                    IdNumber = "12345678910"
-                },
-                TechStackList = new List<string>() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio" },
+                    form.Applicant.Age = 18;
+                    form.Applicant.IdNumber = "12345678910";
+                    form.TechStackList = new List<string>() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio" };
+                };
+                return form;
+            }
 
-            };
-
-            return form;
         }
 
 
