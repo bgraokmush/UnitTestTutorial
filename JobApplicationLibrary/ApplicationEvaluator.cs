@@ -12,6 +12,7 @@ namespace JobApplicationLibrary
     {
         private const int minAge = 18;
         private const int autoAcceptedYearsOfExperience = 10;
+        public object mock;
         private List<string> TechStackList = new() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio"};
         private IIdentityValidator _iIdentityValidator;
 

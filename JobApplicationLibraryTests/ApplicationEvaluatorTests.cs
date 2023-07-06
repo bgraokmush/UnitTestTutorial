@@ -12,26 +12,49 @@ namespace JobApplicationLibrary.Tests
     
     public class ApplicationEvaluatorTests
     {
+        private Mock<IIdentityValidator> InitialiseTestMock()
+        {
+            var mock = new Mock<IIdentityValidator>();
+            mock.DefaultValue = DefaultValue.Mock;
+            mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("TURKEY");
+            mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(true);
+
+            return mock;
+        }
+
+        private ApplicationEvaluator InitialiseTestEvaluator(Mock<IIdentityValidator> mock)
+        {
+            var evaluator = new ApplicationEvaluator(mock.Object);
+            return evaluator;
+        }
+
+        private JobApplication InitialiseTestJobApplictaion()
+        {
+            JobApplication form = new JobApplication()
+            {
+                Applicant = new Applicant()
+                {
+                    Age = 18,
+                    IdNumber = "12345678910"
+                },
+                TechStackList = new List<string>() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio" },
+
+            };
+
+            return form;
+        }
+
+
         // Yaş 18'den küçükse, AutoReject mi?
         [Test]
         public void Application_WithUnderAge_TransferredToAutoRejected()
         {
             // Arrange
-            var mock = new Mock<IIdentityValidator>();
-            mock.DefaultValue = DefaultValue.Mock;
-            mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("TURKEY");
-            mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(true);
-            
-            var evaluator = new ApplicationEvaluator(mock.Object);
-            JobApplication form = new JobApplication()
-            {
-                Applicant = new Applicant()
-                {
-                    Age = 17
-                },
-                TechStackList = new List<string>() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio" },
+            var mock = InitialiseTestMock();
+            var evaluator = InitialiseTestEvaluator(mock);
 
-            };
+            var form = InitialiseTestJobApplictaion();
+            form.Applicant.Age = 17; // Test Case
 
             // Act
             var result = evaluator.Evaluate(form);
@@ -46,23 +69,10 @@ namespace JobApplicationLibrary.Tests
         public void Application_WithNoTechStack_TransferredToAutoRejected()
         {
             // Arrange
-            var mock = new Mock<IIdentityValidator>();
-            mock.DefaultValue = DefaultValue.Mock;
-            mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("TURKEY");
-            mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(true);
-            
-            var evaluator = new ApplicationEvaluator(mock.Object);
-
-            JobApplication form = new JobApplication()
-            {
-                
-                Applicant = new Applicant()
-                {
-                    Age = 18
-                },
-                TechStackList = new List<string>() { "C#"},
-                
-            };
+            var mock = InitialiseTestMock();
+            var evaluator = InitialiseTestEvaluator(mock);
+            var form = InitialiseTestJobApplictaion();
+            form.TechStackList = new List<string>() { "C#" }; // Test Case
 
             // Act
             var result = evaluator.Evaluate(form);
@@ -77,24 +87,10 @@ namespace JobApplicationLibrary.Tests
         public void Application_WithTechStackOver75P_TranserToAutoAccepted()
         {
             // Arrange
-            var mock = new Mock<IIdentityValidator>();
-            mock.DefaultValue = DefaultValue.Mock;
-            mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("TURKEY");
-            mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(true);
-            
-            var evaluator = new ApplicationEvaluator(mock.Object);
-
-            JobApplication form = new JobApplication()
-            {
-                
-                Applicant = new Applicant()
-                {
-                    Age = 18
-                },
-                TechStackList = new List<string>() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio" },
-                YearsOfExperience = 11,
-                
-            };
+            var mock = InitialiseTestMock(); //Test case default olarak 75 üstü yüzde veriyor
+            var evaluator = InitialiseTestEvaluator(mock);
+            var form = InitialiseTestJobApplictaion();
+            form.YearsOfExperience = 11; 
 
             // Act
             var result = evaluator.Evaluate(form);
@@ -110,22 +106,10 @@ namespace JobApplicationLibrary.Tests
         public void Application_WithInvalidIdentityNumber_TransferredToHR()
         {
             // Arrange
-            var mock = new Mock<IIdentityValidator>();
-            mock.DefaultValue = DefaultValue.Mock;
-            mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("TURKEY");
-            mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(false);
-            
-            var evaluator = new ApplicationEvaluator(mock.Object);
-
-            JobApplication form = new JobApplication()
-            {
-                Applicant = new Applicant()
-                {
-                    Age = 18
-                },
-                TechStackList = new List<string>() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio" },
-
-            };
+            var mock = InitialiseTestMock();
+            mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(false); // Test Case
+            var evaluator = InitialiseTestEvaluator(mock);
+            var form = InitialiseTestJobApplictaion();
 
             // Act
             var result = evaluator.Evaluate(form);
@@ -141,21 +125,11 @@ namespace JobApplicationLibrary.Tests
         public void Application_WithOfficeLocation_TransferredToCTO()
         {
             // Arrange
-            var mock = new Mock<IIdentityValidator>();
-            mock.DefaultValue = DefaultValue.Mock;
-            mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(true);
-            mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("SPAIN");
+            var mock = InitialiseTestMock();
+            mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("SPAIN"); // Test Case
 
-            var evaluator = new ApplicationEvaluator(mock.Object);
-
-            var form = new JobApplication()
-            {
-                Applicant = new Applicant()
-                {
-                    Age = 18,
-                },
-                TechStackList = new List<string>() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio" },
-            };
+            var evaluator = InitialiseTestEvaluator(mock);
+            var form = InitialiseTestJobApplictaion();
 
             // Act
             var result = evaluator.Evaluate(form);
@@ -171,22 +145,13 @@ namespace JobApplicationLibrary.Tests
         public void Application_WithAgeOver50_ValidationModeToDetailed()
         {
             // Arrange
-            var mock = new Mock<IIdentityValidator>();
-            // mock.SetupAllProperties();
-            mock.DefaultValue = DefaultValue.Mock;
-            
-            mock.SetupProperty(i => i.ValidationMode);
+            var mock = InitialiseTestMock();
+            mock.SetupProperty(i => i.ValidationMode); /*mock değerini kontrol etmek için setup ediyoruz*/
 
-            var evaluator = new ApplicationEvaluator(mock.Object);
+            var evaluator = InitialiseTestEvaluator(mock);
 
-            var form = new JobApplication()
-            {
-                Applicant = new Applicant()
-                {
-                    Age = 51,
-                },
-               
-            };
+            var form = InitialiseTestJobApplictaion();
+            form.Applicant.Age = 51; //Test Case
 
             // Act
             var result = evaluator.Evaluate(form);
@@ -201,13 +166,10 @@ namespace JobApplicationLibrary.Tests
         public void Application_WithNullApplicant_ThrowsArgumentNullException()
         {
             // Arrange
-            var mock = new Mock<IIdentityValidator>();  
-            var evaluator = new ApplicationEvaluator(mock.Object);
-            var form = new JobApplication()
-            {
-                //Default değeri null, yazılmasa da olurdu
-                Applicant = null,
-            };
+            var mock = InitialiseTestMock();  
+            var evaluator = InitialiseTestEvaluator(mock);
+            var form = InitialiseTestJobApplictaion();
+            form.Applicant = null; // Test Case
 
             // Act
             Action actionResult = () => evaluator.Evaluate(form);
@@ -222,20 +184,10 @@ namespace JobApplicationLibrary.Tests
         public void Application_WithDefaultValue_IsValidCalled()
         {
             // Arrange
-            var mock = new Mock<IIdentityValidator>();
-            mock.DefaultValue = DefaultValue.Mock;
-            mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("TURKEY");
-            
+            var mock = InitialiseTestMock();
 
-            var evaluator = new ApplicationEvaluator(mock.Object);
-            var form = new JobApplication()
-            {
-                Applicant = new Applicant() { 
-                    Age = 18,
-                    IdNumber = "12345678901"
-                },
-                
-            };
+            var evaluator = InitialiseTestEvaluator(mock);
+            var form = InitialiseTestJobApplictaion();
             
             // Act
             var result = evaluator.Evaluate(form);
@@ -251,18 +203,10 @@ namespace JobApplicationLibrary.Tests
         public void Application_WithYoungAge_IsValidNeverCalled()
         {
             // Arrange
-            var mock = new Mock<IIdentityValidator>();
-            mock.DefaultValue = DefaultValue.Mock;
-            
-            var evaluator = new ApplicationEvaluator(mock.Object);
-
-            var form = new JobApplication() {
-
-                Applicant = new Applicant()
-                {
-                    Age = 17
-                }
-            };
+            var mock = InitialiseTestMock();
+            var evaluator = InitialiseTestEvaluator(mock);
+            var form = InitialiseTestJobApplictaion();
+            form.Applicant.Age = 17; // Test Case
 
             // Act
             var result = evaluator.Evaluate(form);
