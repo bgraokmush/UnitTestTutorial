@@ -8,18 +8,19 @@ using System.Threading.Tasks;
 
 namespace JobApplicationLibrary
 {
-    public class ApplicationEvaluator   
+    public class ApplicationEvaluator: IDisposable
     {
         private const int minAge = 18;
         private const int autoAcceptedYearsOfExperience = 10;
-        public object mock;
         private List<string> TechStackList = new() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio"};
         private IIdentityValidator _iIdentityValidator;
+        private bool disposedValue;
 
         public ApplicationEvaluator(IIdentityValidator iIdentityValidator)
         {
             _iIdentityValidator = iIdentityValidator;
         }
+
 
         public ApplicatonResult Evaluate(JobApplication form)
         {
@@ -74,7 +75,6 @@ namespace JobApplicationLibrary
             return (int)((double)(count / TechStackList.Count) * 100);
         }
 
-
         public enum ApplicatonResult
         {
             AutoReject,
@@ -83,6 +83,36 @@ namespace JobApplicationLibrary
             TransferredToLead,
             TransferredToCTO,
 
+        }
+
+
+        // Default Dispose Pattern
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                    _iIdentityValidator.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        ~ApplicationEvaluator()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

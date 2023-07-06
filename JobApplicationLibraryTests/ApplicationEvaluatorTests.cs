@@ -19,6 +19,7 @@ namespace JobApplicationLibrary.Tests
             mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("TURKEY");
             mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(true);
 
+            Console.WriteLine("Mock oluşturuldu");
             return mock;
         }
 

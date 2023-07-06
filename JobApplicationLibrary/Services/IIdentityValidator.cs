@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JobApplicationLibrary.Services
 {
-    public interface IIdentityValidator
+    public interface IIdentityValidator : IDisposable
     {
         bool IsValid(string idNumber);
         
@@ -17,12 +17,12 @@ namespace JobApplicationLibrary.Services
     }
 
 
-    public interface ICountyData
+    public interface ICountyData : IDisposable
     {
         string Country { get; }
     }
 
-    public interface ICountryDataProvider
+    public interface ICountryDataProvider : IDisposable
     {
         ICountyData CountyData { get; }
     }
