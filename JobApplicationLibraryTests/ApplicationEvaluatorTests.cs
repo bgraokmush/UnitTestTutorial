@@ -26,25 +26,18 @@ namespace JobApplicationLibrary.Tests
 
         private ApplicationEvaluator InitialiseTestEvaluator(Mock<IIdentityValidator> mock)
         {
-            using (ApplicationEvaluator evaluator = new ApplicationEvaluator(mock.Object))
-            {
-                return evaluator;
-            }
+            ApplicationEvaluator evaluator = new ApplicationEvaluator(mock.Object);
+            return evaluator;
         }
 
         private JobApplication InitialiseTestJobApplictaion()
         {
-
-            using (JobApplication form = new JobApplication())
-            {
-                using(form.Applicant = new Applicant())
-                {
-                    form.Applicant.Age = 18;
-                    form.Applicant.IdNumber = "12345678910";
-                    form.TechStackList = new List<string>() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio" };
-                };
-                return form;
-            }
+            JobApplication form = new JobApplication();
+            form.Applicant = new Applicant();
+            form.Applicant.Age = 18;
+            form.Applicant.IdNumber = "12345678910";
+            form.TechStackList = new List<string>() { "C#", "RabbitMQ", "Docker", "Microservice", "VisualStudio" };
+            return form;
 
         }
 
@@ -55,9 +48,9 @@ namespace JobApplicationLibrary.Tests
         {
             // Arrange
             var mock = InitialiseTestMock();
-            var evaluator = InitialiseTestEvaluator(mock);
+            using var evaluator = InitialiseTestEvaluator(mock);
 
-            var form = InitialiseTestJobApplictaion();
+            using var form = InitialiseTestJobApplictaion();
             form.Applicant.Age = 17; // Test Case
 
             // Act
@@ -74,8 +67,8 @@ namespace JobApplicationLibrary.Tests
         {
             // Arrange
             var mock = InitialiseTestMock();
-            var evaluator = InitialiseTestEvaluator(mock);
-            var form = InitialiseTestJobApplictaion();
+            using var evaluator = InitialiseTestEvaluator(mock);
+            using var form = InitialiseTestJobApplictaion();
             form.TechStackList = new List<string>() { "C#" }; // Test Case
 
             // Act
@@ -92,8 +85,8 @@ namespace JobApplicationLibrary.Tests
         {
             // Arrange
             var mock = InitialiseTestMock(); //Test case default olarak 75 üstü yüzde veriyor
-            var evaluator = InitialiseTestEvaluator(mock);
-            var form = InitialiseTestJobApplictaion();
+            using var evaluator = InitialiseTestEvaluator(mock);
+            using var form = InitialiseTestJobApplictaion();
             form.YearsOfExperience = 11; 
 
             // Act
@@ -112,8 +105,8 @@ namespace JobApplicationLibrary.Tests
             // Arrange
             var mock = InitialiseTestMock();
             mock.Setup(i => i.IsValid(It.IsAny<string>())).Returns(false); // Test Case
-            var evaluator = InitialiseTestEvaluator(mock);
-            var form = InitialiseTestJobApplictaion();
+            using var evaluator = InitialiseTestEvaluator(mock);
+            using var form = InitialiseTestJobApplictaion();
 
             // Act
             var result = evaluator.Evaluate(form);
@@ -132,8 +125,8 @@ namespace JobApplicationLibrary.Tests
             var mock = InitialiseTestMock();
             mock.Setup(i => i.CountryDataProvider.CountyData.Country).Returns("SPAIN"); // Test Case
 
-            var evaluator = InitialiseTestEvaluator(mock);
-            var form = InitialiseTestJobApplictaion();
+            using var evaluator = InitialiseTestEvaluator(mock);
+            using var form = InitialiseTestJobApplictaion();
 
             // Act
             var result = evaluator.Evaluate(form);
@@ -152,9 +145,9 @@ namespace JobApplicationLibrary.Tests
             var mock = InitialiseTestMock();
             mock.SetupProperty(i => i.ValidationMode); /*mock değerini kontrol etmek için setup ediyoruz*/
 
-            var evaluator = InitialiseTestEvaluator(mock);
+            using var evaluator = InitialiseTestEvaluator(mock);
 
-            var form = InitialiseTestJobApplictaion();
+            using var form = InitialiseTestJobApplictaion();
             form.Applicant.Age = 51; //Test Case
 
             // Act
@@ -171,15 +164,17 @@ namespace JobApplicationLibrary.Tests
         {
             // Arrange
             var mock = InitialiseTestMock();  
-            var evaluator = InitialiseTestEvaluator(mock);
+            using var evaluator = InitialiseTestEvaluator(mock);
             var form = InitialiseTestJobApplictaion();
-            form.Applicant = null; // Test Case
 
-            // Act
-            Action actionResult = () => evaluator.Evaluate(form);
+                form.Applicant = null; // Test Case
 
-            // Assert
-            actionResult.Should().Throw<ArgumentNullException>();
+                // Act
+                Action actionResult = () => evaluator.Evaluate(form);
+
+                // Assert
+                actionResult.Should().Throw<ArgumentNullException>();
+
         }
 
 
@@ -190,8 +185,8 @@ namespace JobApplicationLibrary.Tests
             // Arrange
             var mock = InitialiseTestMock();
 
-            var evaluator = InitialiseTestEvaluator(mock);
-            var form = InitialiseTestJobApplictaion();
+            using var evaluator = InitialiseTestEvaluator(mock);
+            using var form = InitialiseTestJobApplictaion();
             
             // Act
             var result = evaluator.Evaluate(form);
@@ -208,8 +203,8 @@ namespace JobApplicationLibrary.Tests
         {
             // Arrange
             var mock = InitialiseTestMock();
-            var evaluator = InitialiseTestEvaluator(mock);
-            var form = InitialiseTestJobApplictaion();
+            using var evaluator = InitialiseTestEvaluator(mock);
+            using var form = InitialiseTestJobApplictaion();
             form.Applicant.Age = 17; // Test Case
 
             // Act

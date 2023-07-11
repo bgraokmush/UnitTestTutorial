@@ -22,6 +22,7 @@ namespace JobApplicationLibrary.Models
                 {
                     // TODO: dispose managed state (managed objects)
                     Applicant.Dispose();
+                    Applicant = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

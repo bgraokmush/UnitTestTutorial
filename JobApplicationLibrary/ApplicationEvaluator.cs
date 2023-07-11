@@ -95,6 +95,8 @@ namespace JobApplicationLibrary
                 {
                     // TODO: dispose managed state (managed objects)
                     _iIdentityValidator.Dispose();
+                    _iIdentityValidator = null;
+
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
@@ -113,6 +115,7 @@ namespace JobApplicationLibrary
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+            
         }
     }
 }
